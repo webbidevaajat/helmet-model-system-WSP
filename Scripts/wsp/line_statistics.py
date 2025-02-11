@@ -15,7 +15,7 @@ def export_transit_stats(scenario: dict, emmebank: _emmebank, savefile: Path):
     scenario_id = scenario["scenario_id"]
     network = emmebank.scenario(scenario_id).get_network()
     lines = list(network.transit_lines())
-    modes = {"b": 0, "g": 0, "m": 0, "t": 0, "p": 0}
+    modes = {"b": 0, "g": 0, "m": 0, "t": 0, "p": 0, "r":0}
     total_vol = {
         "transit_vol": modes,
         "transit_boa": modes
