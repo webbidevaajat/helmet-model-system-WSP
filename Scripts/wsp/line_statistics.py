@@ -52,9 +52,9 @@ def export_transit_stats(scenario: dict, emmebank: _emmebank, savefile: Path):
     area_transfer_boardings = area_transfer_boardings.round(-1).astype("int32")
 
     vol_path = savefile.parent / f"{savefile.stem}_volumes.csv"
-    transit_volumes.to_csv(vol_path, sep="\t")
+    transit_volumes.to_csv(vol_path, sep=";")
     transfer_path = savefile.parent / f"{savefile.stem}_area_transfers.csv"
-    area_transfer_boardings.to_csv(transfer_path, sep="\t", index=False)
+    area_transfer_boardings.to_csv(transfer_path, sep=";", index=False)
 
 
 def get_transit_volumes(segment):
