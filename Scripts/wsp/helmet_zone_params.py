@@ -106,3 +106,5 @@ areas = {
     ),
     "peripheral": (16000, 31999),
 }
+
+day_to_year_factor = 300
