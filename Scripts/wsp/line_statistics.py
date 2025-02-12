@@ -50,7 +50,7 @@ def export_transit_stats(scenario: dict, emmebank: _emmebank, savefile: Path):
     transit_volumes.index.name = "mode"
     area_boardings = pandas.DataFrame(area_totals).T
     area_boardings = area_boardings.round(-1).astype("int32") * day_to_year_factor
-    transit_volumes.index.name = "area"
+    area_boardings.index.name = "area"
 
     vol_path = savefile.parent / f"{savefile.stem}_volumes.csv"
     transit_volumes.to_csv(vol_path, sep=";")
