@@ -1,18 +1,12 @@
 import sys
 from os import path
 from time import process_time
-sys.path.append("C:/Program Files/Bentley/OpenPaths/EMME 24.01.00/Python311"\
-    "/Lib/site-packages")
-sys.path.append("C:/Program Files/Bentley/OpenPaths/EMME 24.01.00/Python311"\
-    "/Lib/site-packages/win32/lib")
-sys.path.append("C:/Program Files/Bentley/OpenPaths/EMME 24.01.00/Python311"\
-    "/Lib/site-packages/win32/lib")
 import inro.emme.desktop.app as _app
 import inro.modeller as _m
 from pathlib import Path
+import matplotlib.pyplot as plt
 
 from line_statistics import get_transit_stats
-
 
 def main():
     time_start = process_time()
@@ -27,6 +21,7 @@ def main():
     results_path = emme_proj_path / "Output"
     run_scens = ["Helmet 4", "Helmet 5"]
     get_transit_stats(run_scens, modeller, results_path)
+    
 
     time_stop = process_time()
     print(f"----- Program execution time {time_stop - time_start} seconds")
