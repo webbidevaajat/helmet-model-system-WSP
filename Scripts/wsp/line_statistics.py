@@ -7,8 +7,8 @@ import inro.emme.database.emmebank as _emmebank
 from helmet_zone_params import kela_codes, municipalities, areas
 
 def export_transit_stats(scenario: dict, emmebank: _emmebank, savefile: Path):
-    """This function exports mode and area specific statistics as a csv
-    with tab separation. Results are saved under 'results' folder.
+    """This function exports mode and area specific statistics as a csv. 
+    Results are saved to a user given path defined in main.
     Loops for each transit line and it's segments in network in order to fetch
     volume, boarding and transfer boarding values.
     """
@@ -47,7 +47,7 @@ def export_transit_stats(scenario: dict, emmebank: _emmebank, savefile: Path):
     hsl_area_transfers = sum(area_totals.values())
     
     transit_volumes = pandas.DataFrame(total_vol).round(-1).astype("int32")
-    area_transfer_boardings = pandas.DataFrame(area_totals, index=[0])
+    area_transfer_boardings = pandas.DataFrame(area_totals, index=list(0))
     area_transfer_boardings["HSL_area"] = hsl_area_transfers
     area_transfer_boardings = area_transfer_boardings.round(-1).astype("int32")
 
