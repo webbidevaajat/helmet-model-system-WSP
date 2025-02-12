@@ -1,15 +1,22 @@
 """Define Emme scenario related parameters."""
 # Scenario related settings
 scenarios = {
-    "VE0 2024": {
-        "result_name": "VE0",
-        "input_name": "VE0_2024",
-        "year": "2024",
-        "name": "Nyky",
-        "scenario_id": 10,
-        "calib_scenario": {"aht":3, "iht":4},
+    "Helmet 4": {
+        "result_name": "Helmet 4",
+        "input_name": "Helmet 4",
+        "year": "2023",
+        "name": "Helmet 4",
+        "scenario_id": 1,
         "emme_matrix_id": 100,
     },
+    "Helmet 5": {
+        "result_name": "Helmet 5",
+        "input_name": "Helmet 5",
+        "year": "2023",
+        "name": "Helmet 5",
+        "scenario_id": 2,
+        "emme_matrix_id": 200,
+    }
 }
 # these id:s will be added to scenario-specific emme_matrix_id e.g. 100 + 21 = mf121
 mat_ids = {
