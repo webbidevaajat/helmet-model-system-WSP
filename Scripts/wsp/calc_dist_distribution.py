@@ -31,7 +31,7 @@ def create_bin_labels(dist_bins: list):
             bin_labels.append(f"{dist_bins[i]}+")
     return bin_labels
 
-def get_dd_data(run_scens, modeller, dist_bins, results_path):
+def save_dd_data(run_scens, modeller, dist_bins, results_path):
     """Aggregated demand based on distance bins."""
     emmebank = modeller.emmebank
     conf_scens = config_scens.scenarios
