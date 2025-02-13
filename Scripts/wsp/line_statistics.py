@@ -16,7 +16,7 @@ def export_transit_stats(scenario: dict, emmebank: _emmebank, savefile: Path):
     scenario_id = scenario["scenario_id"]
     network = emmebank.scenario(scenario_id).get_network()
     lines = list(network.transit_lines())
-    total_transit_boa = {"b": 0, "g": 0, "m": 0, "t": 0, "p": 0, "r": 0}
+    total_transit_boa = {"b": 0, "g": 0, "m": 0, "t": 0, "p": 0, "r": 0, "d": 0, "j": 0, "w": 0, "e": 0}
     area_names = ["helsinki_other", "espoo_vant_kau", "surround_train", 
                  "surround_other", "peripheral"]
     area_totals = {name: {"total_boa": 0, "transfer_boa": 0, "first_boa": 0}
@@ -67,6 +67,7 @@ def get_transfer_boardings(segment) -> tuple:
     boardings and transfers (vrk).
     """
     kela_name = kela_codes[int(segment.i_node.data3)]
+    
     kela_centroids = municipalities[kela_name]
     area_name = None
     total_boa = 0
