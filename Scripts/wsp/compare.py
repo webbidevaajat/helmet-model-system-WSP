@@ -38,20 +38,20 @@ def compare_by_mode(scenarios: list, results_path: Path, compare_data: Path):
     helmet_boardings = pd.DataFrame()
 
     helmet_boardings = get_helmet_boarding_by_mode(scenarios, results_path)
-    helmet_boardings['transit_boa'] = helmet_boardings['transit_boa'] / 1000000
+    helmet_boardings['boa_totals'] = helmet_boardings['boa_totals'] / 1000000
 
     hsl_boardings = pd.read_csv(compare_data)
 
     # join dataframes
     hsl_boardings = hsl_boardings[['mode', 'nousijaa_2023']]
-    hsl_boardings = hsl_boardings.rename(columns={'nousijaa_2023': 'transit_boa'})
+    hsl_boardings = hsl_boardings.rename(columns={'nousijaa_2023': 'boa_totals'})
     hsl_boardings['scenario'] = 'HSL_2023'
 
     # join dataframes
     joined_data = pd.concat([hsl_boardings, helmet_boardings], ignore_index=True)
 
     # Pivot the data to have sources as columns
-    pivot_data = joined_data.pivot(index='mode', columns='scenario', values='transit_boa')
+    pivot_data = joined_data.pivot(index='mode', columns='scenario', values='boa_totals')
 
     # Add column name 
     mode_names = pd.read_csv(compare_data)
