@@ -88,6 +88,7 @@ municipalities = {
     "Myrskyla": (29000, 29499),
     "Lapinjarvi": (29500, 29999),
     "Loviisa": (30000, 30999),
+    "Forssa": (16000, 30999)
 }
 
 areas = {
