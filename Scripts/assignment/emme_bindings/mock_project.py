@@ -352,6 +352,9 @@ class MockProject:
     def network_results(self, *args, **kwargs):
         pass
 
+    def create_extra_function_parameters(self, *args, **kwargs):
+        pass
+
 
 Modeller = namedtuple("Modeller", "emmebank")
 
@@ -530,6 +533,7 @@ class Network:
         self._centroids = {}
         self._regular_nodes = {}
         self._links = {}
+        self._turns = {}
         self._vehicles = {}
         self._lines = {}
         self._objects = {
@@ -537,12 +541,16 @@ class Network:
             "LINK": self.links,
             "TRANSIT_LINE": self.transit_lines,
             "TRANSIT_SEGMENT": self.transit_segments,
+            "TURN": self.turns
         }
         self._extra_attr = {attr_type: {} for attr_type in self._objects}
 
     def mode(self, idx: int) -> 'Mode':
         if idx in self._modes:
             return self._modes[idx]
+    
+    def turns(self) -> Iterable[Turn]:
+        return self._turns
 
     def modes(self) -> Iterable:
         return iter(self._modes.values())
@@ -704,6 +712,9 @@ class Node(NetworkObject):
     def outgoing_segments(self, include_hidden=False):
         return (s for s in self.network.transit_segments(include_hidden)
             if s.i_node is self)
+    
+    def incoming_links(self):
+        return (l for l in self.network.links() if l.j_node is self)
 
 class Link(NetworkObject):
     def __init__(self, 
@@ -736,6 +747,40 @@ class Link(NetworkObject):
 
     def segments(self) -> Iterable:
         return iter(self._segments)
+
+class Turn(NetworkObject):
+    def __init__(self, 
+                 network: Network, 
+                 at_node_id: int, 
+                 from_node_id: int,
+                 to_node_id: int,
+                 penalty_func: int
+                ):
+        NetworkObject.__init__(self, network, network._extra_attr["TURN"])
+        self.from_link = Network.link(from_node_id, at_node_id)
+        self.to_link = Network.link(at_node_id, to_node_id)
+        self.penalty_func = penalty_func
+        
+    def __str__(self):
+        self.id
+
+    @property
+    def id(self) -> str:
+        return "{}-{}-{}".format(self.from_link.i_node.id,
+                              self.from_link.j_node.id,
+                              self.to_link.j_node.id)
+    
+    @property
+    def i_node(self) -> Node:
+        return self.from_link.i_node
+    
+    @property
+    def j_node(self) -> Node:
+        return self.from_link.j_node
+    
+    @property
+    def k_node(self) -> Node:
+        return self.to_link.j_node
 
 
 class TransitLine(NetworkObject):
@@ -783,6 +828,7 @@ class TransitSegment(NetworkObject):
             self, network, network._extra_attr["TRANSIT_SEGMENT"])
         self.line = line
         self.link = link
+        self.loop_index = 1
         self.allow_alightings = False
         self.allow_boardings = False
         self.transit_time_func = 0
