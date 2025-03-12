@@ -174,7 +174,7 @@ class ModelSystem:
                         for i in range(MAX_PNR_ITERATIONS):
                             modified = purpose.park_and_ride_model.apply_crowding_penalty()
                             purpose.calc_prob(saved_pnr_impedance[purpose.name])
-                            demand = purpose.calc_demand(estimation_mode)
+                            demand = purpose.calc_demand(estimation_mode=estimation_mode, add_sec_dest=False)
                             log.debug(f"Park and ride crowding penalty iteration {i+1} modified {modified} facilities.")
                             if modified < 1:                                
                                 break
@@ -368,8 +368,9 @@ class ModelSystem:
             self.event_handler.on_time_period_assigned(iteration, ap, impedance[tp])
             if tp == "aht":
                 self._update_ratios(impedance[tp], tp)
-            if iteration=="last": # TODO: Get uncongested time from assignment results
-                log.warn('TODO: Get uncongested transit time from the assignment results')
+            if iteration=="last" and param.always_congested:     
+                self._save_to_omx(impedance[tp], tp)
+            elif iteration=="last":
                 impedance[tp]["time"]["transit_uncongested"] = previous_iter_impedance[tp]["time"]["transit_work"]
                 self._save_to_omx(impedance[tp], tp)
         if iteration=="last":

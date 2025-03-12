@@ -263,9 +263,13 @@ stopping_criteria_coarse = {
 # Congestion function for congested transit assignment
 congestion_func = '''
 def calc_segment_cost(transit_volume, line_capacity, segment):
-    if transit_volume < segment.line.seated_capacity:
-        return 0.0
-    return 0.8 * (transit_volume - segment.line.seated_capacity) / transit_volume
+    seated_capacity = segment.line.seated_capacity
+    fill_ratio = transit_volume / seated_capacity
+    seated_weight = max(0.86, 0.38*fill_ratio + 0.67)
+    standing_weight = max(1.79, 0.82*fill_ratio + 0.765)
+    if fill_ratio < 1.0:
+        return seated_weight - 1.0
+    return (seated_weight + (fill_ratio-1.0) * standing_weight) / fill_ratio - 1.0
 '''
 trass_func = {
     'type': 'CUSTOM',
@@ -308,70 +312,70 @@ bike_dist = {
 # TODO: Trucks and vans
 volume_factors = {
     "car": {
-        "aht": 1. / 0.465,
-        "pt": 1. / 0.094,
-        "iht": 1. / 0.369,
+        "aht": 2.0622815050146266,
+        "pt": 10.87756099936012,
+        "iht": 2.636256734240595
     },
     "car_work": {
-        "aht": 1. / 0.456,
-        "pt": 1. / 0.102,
-        "iht": 1. / 0.433,
+        "aht": 2.1511371941701443,
+        "pt": 9.595261522147535,
+        "iht": 2.6876828857537505
     },
     "car_leisure": {
-        "aht": 1. / 0.488,
-        "pt": 1. / 0.089,
-        "iht": 1. / 0.289,
+        "aht": 1.822633510494245,
+        "pt": 12.416216799069286,
+        "iht": 2.567335795915922
     },
     "transit": {
-        "aht": 1. / 0.478,
-        "pt": 1. / 0.109,
-        "iht": 1. / 0.405,
+        "aht": 1.718651340007729,
+        "pt": 9.215218973897288,
+        "iht": 2.466313449878458
     },
     "transit_work": {
-        "aht": 1. / 0.445,
-        "pt": 1. / 0.103,
-        "iht": 1. / 0.414,
+        "aht": 1.7648082264481162,
+        "pt": 9.458785710446705,
+        "iht": 2.358668559084971
     },
     "transit_leisure": {
-        "aht": 1. / 0.571,
-        "pt": 1. / 0.117,
-        "iht": 1. / 0.373,
+        "aht": 1.6101278413419995,
+        "pt": 8.855898570776446,
+        "iht": 2.7822971006521318
     },
     "bike": {
-        "aht": 1. / 0.604,
-        "pt": 1. / 0.105,
-        "iht": 1. / 0.430,
+        "aht": 1.592424507799951,
+        "pt": 9.778768584286764,
+        "iht": 2.430075096866623
     },
     "bike_work": {
-        "aht": 1. / 0.542,
-        "pt": 1. / 0.109,
-        "iht": 1. / 0.500,
+        "aht": 1.7792746478588168,
+        "pt": 9.577998573953217,
+        "iht": 2.0977940770728236
     },
     "bike_leisure": {
-        "aht": 1. / 0.725,
-        "pt": 1. / 0.103,
-        "iht": 1. / 0.332,
+        "aht": 1.4153296994517823,
+        "pt": 9.921895075001368,
+        "iht": 3.003522618985676
     },
     "trailer_truck": {
-        "aht": 1 / 0.3,
-        "pt": 1 / 0.1,
-        "iht": 1 / 0.3,
+        "aht": 3.3333333333333335,
+        "pt": 10.0,
+        "iht": 3.3333333333333335
     },
     "truck": {
-         "aht": 1 / 0.3,
-        "pt": 1 / 0.1,
-        "iht": 1 / 0.3,
+        "aht": 3.3333333333333335,
+        "pt": 10.0,
+        "iht": 3.3333333333333335
     },
     "van": {
-        "aht": 1 / 0.3,
-        "pt": 1 / 0.1,
-        "iht": 1 / 0.3,
+        "aht": 3.3333333333333335,
+        "pt": 10.0,
+        "iht": 3.3333333333333335
     },
     "bus": {
-        "aht": 1 / 0.497, 
-        "pt": 1 / 0.090, 
-        "iht": 1 / 0.497,
-    },
+        "aht": 2.0120724346076457,
+        "pt": 11.11111111111111,
+        "iht": 2.0120724346076457
+    }
 }
 volume_factors["aux_transit"] = volume_factors["transit"]
 # Factor for converting weekday traffic into yearly day average
@@ -483,8 +487,8 @@ uncongested_transit_time = "base_timtr"
 emme_matrices = {
     "car_work": ("demand", "time", "dist", "cost", "gen_cost"),
     "car_leisure": ("demand", "time", "dist", "cost", "gen_cost"),
-    "transit_work": ("demand", "time", "dist", "cost"),
-    "transit_leisure": ("demand", "time", "dist", "cost"),
+    "transit_work": ("demand", "time", "dist", "cost", "congest_time"),
+    "transit_leisure": ("demand", "time", "dist", "cost", "congest_time"),
     "bike": ("demand", "time", "dist"),
     "walk": ("time", "dist"),
     "trailer_truck": ("demand", "time", "dist", "cost", "gen_cost"),
