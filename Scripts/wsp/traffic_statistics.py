@@ -7,7 +7,7 @@ import inro.modeller as _m
 import inro.emme.database.emmebank as _emmebank
 from helmet_zone_params import kela_codes, municipalities, areas, day_to_year_factor
 
-def export_volume_stats(scenario: dict, emmebank: _emmebank, savefile: Path):
+def export_traffic_stats(scenario: dict, emmebank: _emmebank, savefile: Path):
     """This function exports mode, area specific passenger volume statistics as a csv. 
     Results are saved to a user given path defined in main.
     Loops for each mode in link attributes. Aggregates volumes for each mode and area.
@@ -15,7 +15,7 @@ def export_volume_stats(scenario: dict, emmebank: _emmebank, savefile: Path):
     scenario_id = scenario["scenario_id"]
     network = emmebank.scenario(scenario_id).get_network()
     links = list(network.links())
-    total_volume = {"Juna": 0, "Raitiovaunu": 0, "Linja-auto": 0, "Metro": 0, "Henkiloautot": 0}
+    total_volume = {"Juna": 0, "Raitiovaunu": 0, "Linja-auto": 0, "Metro": 0, "Henkiloautot": 0, "Joukkoliikenne": 0, "Yhteensa": 0}
     area_codes = {1: "Niemen raja", 2: "Kantakaupungin raja", 3: "Lantinen poikittalinja"}
     area_totals = {mode: {area_codes[code]: 0 for code in area_codes} for mode in total_volume}
 
@@ -42,26 +42,21 @@ def export_volume_stats(scenario: dict, emmebank: _emmebank, savefile: Path):
         elif "m" in mode_ids:
             area_totals["Metro"][area_codes[area]] += link["@transit_work_vrk"] + link["@transit_leisure_vrk"]
 
+    # sum joukkoliikenne and yteensa
+    for area in area_codes.keys():
+        area_totals["Joukkoliikenne"][area_codes[area]] = area_totals["Juna"][area_codes[area]] + area_totals["Raitiovaunu"][area_codes[area]] + area_totals["Metro"][area_codes[area]] + area_totals["Linja-auto"][area_codes[area]]
+        area_totals["Yhteensa"][area_codes[area]] = area_totals["Henkiloautot"][area_codes[area]] + area_totals["Joukkoliikenne"][area_codes[area]]
+
     total_volumes = pandas.DataFrame(area_totals).T
     total_volumes.index.name = "mode"
 
     # Pivot data
     total_volumes = total_volumes.reset_index().melt(id_vars=["mode"], var_name="area", value_name="vrk")
 
-    # Sum results
-    joukkoliikenne = total_volumes[total_volumes["mode"].isin(["Juna", "Raitiovaunu", "Metro", "Linja-auto"])].groupby("area")["vrk"].sum().reset_index()
-    joukkoliikenne["mode"] = "Joukkoliikenne"
-
-    yhteensa = total_volumes.groupby("area")["vrk"].sum().reset_index()
-    yhteensa["mode"] = "Yhteensa"
-
-    # Append sum rows to original dataframe
-    total_volumes = pandas.concat([total_volumes, joukkoliikenne, yhteensa], ignore_index=True)
-
     vol_path = savefile.parent / f"{savefile.stem}_volumes.csv"
     total_volumes.to_csv(vol_path, sep=";", index=False)
 
-def save_volume_stats(run_scens: list, modeller: _m, results_path: Path):
+def save_traffic_stats(run_scens: list, modeller: _m, results_path: Path):
     """Saves all mode volumes on defined links, by area and mode to a csv file.
     """
     emmebank = modeller.emmebank
@@ -70,5 +65,5 @@ def save_volume_stats(run_scens: list, modeller: _m, results_path: Path):
         scenario = conf_scens[scenario_name]
         filename = f"volume_stats_{scenario['year']}_{scenario['name']}.csv"
         savefile = results_path / filename
-        export_volume_stats(scenario, emmebank, savefile)
+        export_traffic_stats(scenario, emmebank, savefile)
         print("Successfully exported volume stats for {}".format(scenario_name))

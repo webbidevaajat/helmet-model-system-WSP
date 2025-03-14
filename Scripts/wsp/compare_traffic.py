@@ -18,7 +18,7 @@ def get_helmet_volume(scenarios: list, results_path: Path):
         helmet_results = pd.concat([helmet_results, results], ignore_index=True)
     return helmet_results
 
-def compare(scenarios: list, results_path: Path, compare_data: Path):
+def export_traffic_comparison(scenarios: list, results_path: Path, compare_data: Path):
     """This function compares Helmet volumes by mode and area with  
     HSL statistics.
     """
@@ -41,31 +41,26 @@ def compare(scenarios: list, results_path: Path, compare_data: Path):
     # Export results comparison by mode
     joined_data.to_csv(savefile, sep=";", index=False)
 
-def plot_comparison(results_path: Path):
+def plot_traffic_comparison(results_path: Path):
     """Plots volumes. Saves results to result_path."""
     filename = f"volume_comparison.csv"
     volumes_stats = pd.read_csv(results_path / filename, sep=";")
 
+    order = ["Juna", "Raitiovaunu", "Linja-auto", "Metro", "Joukkoliikenne", "Henkiloautot", "Yhteensa"]
+    
     for area in volumes_stats['area'].unique():
         fig, ax = ax_settings()
         area_data = volumes_stats[volumes_stats['area'] == area]
-
-        modes = area_data['mode'].unique()
-        scenarios = area_data['scenario'].unique()
-        bar_width = 0.2
-        index = range(len(scenarios))
-
-        for i, mode in enumerate(modes):
-            mode_data = area_data[area_data['mode'] == mode]
-            ax.bar([p + bar_width * i for p in index], mode_data['vrk'], width=bar_width, label=mode)
-
-        ax.set_ylabel("Volume (vrk)")
-        ax.set_title(f"Traffic volume in {area}, by mode and scenario")
-        ax.set_xticks([p + bar_width * (len(modes) / 2) for p in index])
-        ax.set_xticklabels(scenarios)
+        area_data_pivot = area_data.pivot(index='mode', columns='scenario', values='vrk')
+        area_data_pivot = area_data_pivot.reindex(order)
+        area_data_pivot.plot(kind='bar', ax=ax, width=0.8)
+        ax.set_xticklabels(area_data_pivot.index, rotation=45, fontsize=5)
+        ax.set_title(f"Liikennemäärät (vrk) - {area}")
         ax.legend()
+        ax.set_xlabel('')  # Remove x-axis title
+
         plt.tight_layout(pad=2.0)
-        plt.savefig(results_path / f"traffic_by_mode_{area}.jpg", dpi=300)
+        plt.savefig(results_path / f"traffic_comparison_{area}.jpg", dpi=300)
         plt.close(fig)
 
 def ax_settings() -> tuple[plt.Figure, plt.Axes]:
