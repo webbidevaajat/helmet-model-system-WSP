@@ -151,7 +151,7 @@ def plot_boa_comparison_by_mode(results_path: Path):
     ax.set_xlabel('')  # Remove x-axis title
     # Add labels to the chart
     for container in ax.containers:
-        ax.bar_label(container, label_type='edge', fmt='%.2f')
+        ax.bar_label(container, label_type='edge', fmt='%.0f')
     plt.tight_layout(pad=2.0)
     plt.savefig(results_path / f"boarding_comparison.jpg", dpi=300)
     plt.close(fig)
