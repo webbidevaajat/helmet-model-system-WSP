@@ -1,4 +1,4 @@
-""" This module exports line statistics summary in csv and excel"""
+""" This module exports all modes traffic statistics summary in csv and excel"""
 import pandas
 import config_scens
 from pathlib import Path
