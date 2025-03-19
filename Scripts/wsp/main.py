@@ -12,6 +12,8 @@ from compare_boarding import export_boa_comparison_by_mode, export_boa_compariso
 from traffic_statistics import save_traffic_stats
 from compare_traffic import export_traffic_comparison, plot_traffic_comparison
 
+from metro_statistics import save_metro_stats
+from compare_metro import export_metro_boa_comparison
 
 def main():
     time_start = process_time()
@@ -38,6 +40,8 @@ def main():
     save_traffic_stats(run_scens, modeller, results_path)
     export_traffic_comparison(run_scens, results_path, hsl_traffic_statistics /  "combined.csv")
     plot_traffic_comparison(results_path)
+    save_metro_stats(run_scens, modeller, results_path)
+    export_metro_boa_comparison(run_scens, results_path, hsl_statistics /  "HSL_metro_boardings.csv")
 
     time_stop = process_time()
     print(f"----- Program execution time {time_stop - time_start} seconds")
