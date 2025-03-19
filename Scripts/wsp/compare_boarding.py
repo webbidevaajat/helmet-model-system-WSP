@@ -134,7 +134,7 @@ def plot_boa_comparison_by_mode(results_path: Path):
 
     mode_labels = {"b": "Bussi (b)", "d": "Bussi (d)", "e": "Bussi (e)",
                    "g": "Runkobussi", "m": "Metro", "p": "Pikaraitiotie", 
-                   "r": "Lähijunat", "t": "Raitiovaunu", "w": "Lautat"}
+                   "r": "Lähijunat", "t": "Raitiotie", "w": "Lautat" , "j": "Kaukojuna"}
     
     fig, ax = ax_settings()
     # replace mode label
