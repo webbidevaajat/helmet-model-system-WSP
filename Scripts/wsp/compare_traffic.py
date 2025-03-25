@@ -29,7 +29,11 @@ def export_traffic_comparison(scenarios: list, results_path: Path, compare_data:
 
     # pivot table
     hsl_volumes = hsl_volumes.melt(id_vars=["mode"], var_name="area", value_name="vrk")
-    hsl_volumes['scenario'] = 'HSL_2022'
+    hsl_volumes['scenario'] = 'HSL'
+    # add source year for each area
+    hsl_volumes.loc[hsl_volumes["area"] == "Kantakaupungin raja", 'scenario'] = 'HSL_2022' 
+    hsl_volumes.loc[hsl_volumes["area"] == "Niemen raja", 'scenario'] = 'HSL_2023'
+    hsl_volumes.loc[hsl_volumes["area"] == "Lantinen poikittalinja", 'scenario'] = 'HSL_2023'
 
     # join dataframes
     joined_data = pd.concat([hsl_volumes, helmet_volumes], ignore_index=True)
@@ -58,7 +62,8 @@ def plot_traffic_comparison(results_path: Path):
         ax.set_title(f"Liikennemäärät (vrk) - {area}")
         ax.legend()
         ax.set_xlabel('')  # Remove x-axis title
-
+        ax.yaxis.grid(True, linestyle='--', alpha=0.5)
+        
         plt.tight_layout(pad=2.0)
         plt.savefig(results_path / f"traffic_comparison_{area}.jpg", dpi=300)
         plt.close(fig)
